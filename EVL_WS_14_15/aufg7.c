@@ -62,7 +62,7 @@ void addAlbum(int key, char *name, int artistKey, int *titleKeys, char (*titleNa
     tmpAlbum->next = tmpArtist->albums;
     tmpArtist->albums = tmpAlbum;
     
-    for(i = 0; i <= titleCount; i++) {
+    for(i = 0; i < titleCount; i++) {
         tmpTitle = malloc(sizeof(struct title));
         if(!i)
             tmpTitle->next = NULL;
@@ -84,10 +84,7 @@ struct artist * getArtist(int key) {
         else
             tmpArtist = tmpArtist->next;
     }
-    if(tmpArtist->key == key)
-        return tmpArtist;
-    else
-        return NULL;
+    return tmpArtist;
 }
 
 struct album * getAlbum(int key) {
@@ -96,23 +93,21 @@ struct album * getAlbum(int key) {
     struct artist *tmpArtist = head;
     if(tmpArtist->albums == NULL)
         return NULL;
-    struct album *tmpAlbum = tmpArtist->albums;
+    struct album *tmpAlbum;
     while(tmpArtist != NULL) {
+        tmpAlbum = tmpArtist->albums;
         while(tmpAlbum != NULL) {
             if(tmpAlbum->key == key)
                 break;
             else
                 tmpAlbum = tmpAlbum->next;
         }
-        if(tmpAlbum->key == key)
+        if(tmpAlbum != NULL)
             break;
         else
             tmpArtist = tmpArtist->next;
     }
-    if(tmpAlbum->key == key)
-        return tmpAlbum;
-    else
-        return NULL;
+    return tmpAlbum;
 }
 
 struct artist * getArtistByAlbumKey(int key) {
@@ -129,7 +124,7 @@ struct artist * getArtistByAlbumKey(int key) {
             else
                 tmpAlbum = tmpAlbum->next;
         }
-        if(tmpAlbum->key == key)
+        if(tmpAlbum != NULL)
             break;
         else
             tmpArtist = tmpArtist->next;
@@ -196,10 +191,7 @@ struct artist * findArtist(char *name) {
         else
             tmpArtist = tmpArtist->next;
     }
-    if(strstr(tmpArtist->name, name))
-        return tmpArtist;
-    else
-        return NULL;
+    return tmpArtist;
 }
 
 struct album * findAlbum(char *name) {
@@ -208,15 +200,16 @@ struct album * findAlbum(char *name) {
     struct artist *tmpArtist = head;
     if(tmpArtist->albums == NULL)
         return NULL;
-    struct album *tmpAlbum = tmpArtist->albums;
+    struct album *tmpAlbum;
     while(tmpArtist != NULL) {
+        tmpAlbum = tmpArtist->albums;
         while(tmpAlbum != NULL) {
             if(strstr(tmpAlbum->name, name))
                 break;
             else
                 tmpAlbum = tmpAlbum->next;
         }
-        if(strstr(tmpAlbum->name, name))
+        if(tmpAlbum != NULL)
             break;
         else
             tmpArtist = tmpArtist->next;
@@ -272,7 +265,7 @@ int main() {
                         scanf(" %50[^\n]s", titleNames[i]);
                         i++;
                     } while(i && i < 50);
-                    addAlbum(albumKey, albumName, artistKey, titleKeys, titleNames, i);
+                    addAlbum(albumKey, albumName, artistKey, titleKeys, titleNames, i+1);
                 }
                 break;
             case 'A':
@@ -325,13 +318,13 @@ int main() {
                     scanf("%d", &artistKey);
                     switch(removeArtist(artistKey)) {
                         case 0:
-                            printf("Artist erfolgreich entfernt.");
+                            printf("Interpret erfolgreich entfernt.");
                             break;
                         case 1:
-                            printf("Kein Artist vorhanden.");
+                            printf("Kein Interpret vorhanden.");
                             break;
                         case 2:
-                            printf("Artist mit diesem Key nicht gefunden.");
+                            printf("Interpret mit diesem Key nicht gefunden.");
                             break;
                     }
                 } else if(menu == 'A' || menu == 'a') {
@@ -387,7 +380,7 @@ int main() {
                             }
                         }
                     } else {
-                        printf("Kein Album gefunden, der diesen Name hat oder ihn enthaelt. Sicher, dass es in der Datenbank vorhanden ist?\n");
+                        printf("Kein Album gefunden, das diesen Name hat oder ihn enthaelt. Sicher, dass es in der Datenbank vorhanden ist?\n");
                     }
                 }
                 break;
