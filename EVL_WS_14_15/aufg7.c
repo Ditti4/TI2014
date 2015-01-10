@@ -242,7 +242,7 @@ int main() {
                 scanf(" %c", &menu);
                 if(menu == 'I' || menu == 'i') {
                     printf("Interpreten-Key angeben: ");
-                    scanf("%d", &artistKey, artistName);
+                    scanf("%d", &artistKey);
                     printf("Interpreten-Name angeben (maximal 50 Zeichen): ");
                     scanf(" %50[^\n]s", artistName);
                     addArtist(artistKey, artistName);
