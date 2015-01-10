@@ -32,9 +32,7 @@ struct interpret {
     struct interpret *next;
 };
 
-struct head {
-    struct interpret *interpretHead;
-} *heads;
+struct interpret *head;
 
 void addInterpret(int key, char *name) {
     struct interpret *tmp;
@@ -42,14 +40,14 @@ void addInterpret(int key, char *name) {
     tmp->key = key;
     strcpy(tmp->name, name);
     tmp->alben = NULL;
-    tmp->next = heads->interpretHead;
-    heads->interpretHead = tmp;
+    tmp->next = head;
+    head = tmp;
 }
 
 void addAlbum(int key, char *name, int interpretKey, int *titleKeys, char (*titleNames)[50], int titleCount) {
     struct album *tmpAlbum;
     struct title *tmpTitle;
-    struct interpret *tmpInterpret = heads->interpretHead;
+    struct interpret *tmpInterpret = head;
     int i;
     
     tmpInterpret = getInterpret(interpretKey);
@@ -77,7 +75,7 @@ void addAlbum(int key, char *name, int interpretKey, int *titleKeys, char (*titl
 }
 
 struct album * getAlbum(int key) {
-    struct interpret *tmpInterpret = heads->interpretHead;
+    struct interpret *tmpInterpret = head;
     struct album *tmpAlbum = tmpInterpret->alben;
     while(tmpInterpret != NULL) {
         while(tmpAlbum != NULL) {
@@ -98,7 +96,7 @@ struct album * getAlbum(int key) {
 }
 
 struct interpret * getInterpret(int key) {
-    struct interpret *tmpInterpret = heads->interpretHead;
+    struct interpret *tmpInterpret = head;
     while(tmpInterpret != NULL) {
         if(tmpInterpret->key == key)
             break;
@@ -112,7 +110,7 @@ struct interpret * getInterpret(int key) {
 }
 
 struct interpret * getInterpretByAlbumKey(int key) {
-    struct interpret *tmpInterpret = heads->interpretHead;
+    struct interpret *tmpInterpret = head;
     struct album *tmpAlbum = tmpInterpret->alben;
     while(tmpInterpret != NULL) {
         while(tmpAlbum != NULL) {
@@ -133,11 +131,11 @@ struct interpret * getInterpretByAlbumKey(int key) {
 }
 
 int removeInterpret(int key) {
-    struct interpret *tmpInterpret = heads->interpretHead;
+    struct interpret *tmpInterpret = head;
     if(tmpInterpret == NULL)
         return 1;
     if(tmpInterpret->key == key) {
-        heads->interpretHead = tmpInterpret->next;
+        head = tmpInterpret->next;
         return 0;
     }
     while(tmpInterpret->next != NULL) {
@@ -172,7 +170,7 @@ int removeAlbum(int key) {
 }
 
 struct interpret * findInterpret(char *name) {
-    struct interpret *tmpInterpret = heads->interpretHead;
+    struct interpret *tmpInterpret = head;
     while(tmpInterpret != NULL) {
         if(strstr(tmpInterpret->name, name))
             break;
@@ -186,7 +184,7 @@ struct interpret * findInterpret(char *name) {
 }
 
 struct album * findAlbum(char *name) {
-    struct interpret *tmpInterpret = heads->interpretHead;
+    struct interpret *tmpInterpret = head;
     struct album *tmpAlbum = tmpInterpret->alben;
     while(tmpInterpret != NULL) {
         while(tmpAlbum != NULL) {
@@ -215,7 +213,7 @@ int main() {
     struct album *tmpAlbum;
     struct title *tmpTitle;
     
-    heads->interpretHead = NULL;
+    head = NULL;
     
     do {
         printf("Interpret/Album (h)inzufuegen, (a)nzeigen (mittels Key), (e)ntfernen, (s)uchen (mittels Name), (I)nfo, beenden mit #: ");
