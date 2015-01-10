@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-void addInterpret(int key, char *name);
-void addAlbum(int key, char *name, int interpretKey, int *titleKeys, char (*titleNames)[50], int titleCount);
-struct interpret * getInterpret(int key);
+void addArtist(int key, char *name);
+void addAlbum(int key, char *name, int artistKey, int *titleKeys, char (*titleNames)[50], int titleCount);
+struct artist * getArtist(int key);
 struct album * getAlbum(int key);
-struct interpret * getInterpretByAlbumKey(int key);
-int removeInterpret(int key);
+struct artist * getArtistByAlbumKey(int key);
+int removeArtist(int key);
 int removeAlbum(int key);
-struct interpret * findInterpret(char *name);
+struct artist * findArtist(char *name);
 struct album * findAlbum(char *name);
 
 struct title {
@@ -25,42 +25,42 @@ struct album {
     struct album *next;
 };
 
-struct interpret {
+struct artist {
     int key;
     char name[50];
-    struct album *alben;
-    struct interpret *next;
+    struct album *albums;
+    struct artist *next;
 };
 
-struct interpret *head;
+struct artist *head;
 
-void addInterpret(int key, char *name) {
-    struct interpret *tmp;
-    tmp = malloc(sizeof(struct interpret));
+void addArtist(int key, char *name) {
+    struct artist *tmp;
+    tmp = malloc(sizeof(struct artist));
     tmp->key = key;
     strcpy(tmp->name, name);
-    tmp->alben = NULL;
+    tmp->albums = NULL;
     tmp->next = head;
     head = tmp;
 }
 
-void addAlbum(int key, char *name, int interpretKey, int *titleKeys, char (*titleNames)[50], int titleCount) {
+void addAlbum(int key, char *name, int artistKey, int *titleKeys, char (*titleNames)[50], int titleCount) {
     struct album *tmpAlbum;
     struct title *tmpTitle;
-    struct interpret *tmpInterpret = head;
+    struct artist *tmpArtist;
     int i;
     
-    tmpInterpret = getInterpret(interpretKey);
-    if(!tmpInterpret) {
-        printf("Interpret nicht gefunden. Hinzufuegen wurde abgebrochen.");
+    tmpArtist = getArtist(artistKey);
+    if(!tmpArtist) {
+        printf("Artist nicht gefunden. Hinzufuegen wurde abgebrochen.");
         return;
     }
     
     tmpAlbum = malloc(sizeof(struct album));
     tmpAlbum->key = key;
     strcpy(tmpAlbum->name, name);
-    tmpAlbum->next = tmpInterpret->alben;
-    tmpInterpret->alben = tmpAlbum;
+    tmpAlbum->next = tmpArtist->albums;
+    tmpArtist->albums = tmpAlbum;
     
     for(i = 0; i <= titleCount; i++) {
         tmpTitle = malloc(sizeof(struct title));
@@ -74,18 +74,18 @@ void addAlbum(int key, char *name, int interpretKey, int *titleKeys, char (*titl
     }
 }
 
-struct interpret * getInterpret(int key) {
+struct artist * getArtist(int key) {
     if(head == NULL)
         return NULL;
-    struct interpret *tmpInterpret = head;
-    while(tmpInterpret != NULL) {
-        if(tmpInterpret->key == key)
+    struct artist *tmpArtist = head;
+    while(tmpArtist != NULL) {
+        if(tmpArtist->key == key)
             break;
         else
-            tmpInterpret = tmpInterpret->next;
+            tmpArtist = tmpArtist->next;
     }
-    if(tmpInterpret->key == key)
-        return tmpInterpret;
+    if(tmpArtist->key == key)
+        return tmpArtist;
     else
         return NULL;
 }
@@ -93,11 +93,11 @@ struct interpret * getInterpret(int key) {
 struct album * getAlbum(int key) {
     if(head == NULL)
         return NULL;
-    struct interpret *tmpInterpret = head;
-    if(tmpInterpret->alben == NULL)
+    struct artist *tmpArtist = head;
+    if(tmpArtist->albums == NULL)
         return NULL;
-    struct album *tmpAlbum = tmpInterpret->alben;
-    while(tmpInterpret != NULL) {
+    struct album *tmpAlbum = tmpArtist->albums;
+    while(tmpArtist != NULL) {
         while(tmpAlbum != NULL) {
             if(tmpAlbum->key == key)
                 break;
@@ -107,7 +107,7 @@ struct album * getAlbum(int key) {
         if(tmpAlbum->key == key)
             break;
         else
-            tmpInterpret = tmpInterpret->next;
+            tmpArtist = tmpArtist->next;
     }
     if(tmpAlbum->key == key)
         return tmpAlbum;
@@ -115,14 +115,14 @@ struct album * getAlbum(int key) {
         return NULL;
 }
 
-struct interpret * getInterpretByAlbumKey(int key) {
+struct artist * getArtistByAlbumKey(int key) {
     if(head == NULL)
         return NULL;
-    struct interpret *tmpInterpret = head;
-    if(tmpInterpret->alben == NULL)
+    struct artist *tmpArtist = head;
+    if(tmpArtist->albums == NULL)
         return NULL;
-    struct album *tmpAlbum = tmpInterpret->alben;
-    while(tmpInterpret != NULL) {
+    struct album *tmpAlbum = tmpArtist->albums;
+    while(tmpArtist != NULL) {
         while(tmpAlbum != NULL) {
             if(tmpAlbum->key == key)
                 break;
@@ -132,45 +132,52 @@ struct interpret * getInterpretByAlbumKey(int key) {
         if(tmpAlbum->key == key)
             break;
         else
-            tmpInterpret = tmpInterpret->next;
+            tmpArtist = tmpArtist->next;
     }
     if(tmpAlbum->key == key)
-        return tmpInterpret;
+        return tmpArtist;
     else
         return NULL;
 }
 
-int removeInterpret(int key) {
-    struct interpret *tmpInterpret = head;
-    if(tmpInterpret == NULL)
+int removeArtist(int key) {
+    if(head == NULL)
         return 1;
-    if(tmpInterpret->key == key) {
-        head = tmpInterpret->next;
+    struct artist *tmpArtist = head, *tmpNext;
+    if(tmpArtist->key == key) {
+        head = tmpArtist->next;
+        free(tmpArtist);
         return 0;
     }
-    while(tmpInterpret->next != NULL) {
-        if(tmpInterpret->next->key == key) {
-            tmpInterpret->next = tmpInterpret->next->next;
+    while(tmpArtist->next != NULL) {
+        if(tmpArtist->next->key == key) {
+            tmpNext = tmpArtist->next;
+            tmpArtist->next = tmpArtist->next->next;
+            free(tmpNext);
             return 0;
         } else
-            tmpInterpret = tmpInterpret->next;
+            tmpArtist = tmpArtist->next;
     }
     return 2;
 }
 
 int removeAlbum(int key) {
-    struct interpret *tmpInterpret = getInterpretByAlbumKey(key);
-    struct album *tmpAlbum;
-    if(tmpInterpret == NULL)
+    struct artist *tmpArtist = getArtistByAlbumKey(key);
+    if(tmpArtist == NULL)
         return 1;
-    if((tmpAlbum = tmpInterpret->alben)) {
+    struct album *tmpAlbum, *tmpNext;
+    if((tmpAlbum = tmpArtist->albums)) {
         if(tmpAlbum->key == key) {
-            tmpInterpret->alben = tmpAlbum->next;
+            tmpNext = tmpArtist->albums;
+            tmpArtist->albums = tmpAlbum->next;
+            free(tmpNext);
             return 0;
         }
         while(tmpAlbum->next != NULL) {
             if(tmpAlbum->next->key == key) {
+                tmpNext = tmpAlbum->next;
                 tmpAlbum->next = tmpAlbum->next->next;
+                free(tmpNext);
                 return 0;
             }
         }
@@ -179,18 +186,18 @@ int removeAlbum(int key) {
         return 42;
 }
 
-struct interpret * findInterpret(char *name) {
+struct artist * findArtist(char *name) {
     if(head == NULL)
         return NULL;
-    struct interpret *tmpInterpret = head;
-    while(tmpInterpret != NULL) {
-        if(strstr(tmpInterpret->name, name))
+    struct artist *tmpArtist = head;
+    while(tmpArtist != NULL) {
+        if(strstr(tmpArtist->name, name))
             break;
         else
-            tmpInterpret = tmpInterpret->next;
+            tmpArtist = tmpArtist->next;
     }
-    if(strstr(tmpInterpret->name, name))
-        return tmpInterpret;
+    if(strstr(tmpArtist->name, name))
+        return tmpArtist;
     else
         return NULL;
 }
@@ -198,11 +205,11 @@ struct interpret * findInterpret(char *name) {
 struct album * findAlbum(char *name) {
     if(head == NULL)
         return NULL;
-    struct interpret *tmpInterpret = head;
-    if(tmpInterpret->alben == NULL)
+    struct artist *tmpArtist = head;
+    if(tmpArtist->albums == NULL)
         return NULL;
-    struct album *tmpAlbum = tmpInterpret->alben;
-    while(tmpInterpret != NULL) {
+    struct album *tmpAlbum = tmpArtist->albums;
+    while(tmpArtist != NULL) {
         while(tmpAlbum != NULL) {
             if(strstr(tmpAlbum->name, name))
                 break;
@@ -212,7 +219,7 @@ struct album * findAlbum(char *name) {
         if(strstr(tmpAlbum->name, name))
             break;
         else
-            tmpInterpret = tmpInterpret->next;
+            tmpArtist = tmpArtist->next;
     }
     if(strstr(tmpAlbum->name, name))
         return tmpAlbum;
@@ -222,12 +229,12 @@ struct album * findAlbum(char *name) {
 
 int main() {
     char menu;
-    char interpretName[50], albumName[50], titleNames[50][50];
-    int interpretKey, albumKey;
+    char artistName[50], albumName[50], titleNames[50][50];
+    int artistKey, albumKey;
     int i, titleKeys[50];
-    struct interpret *tmpInterpret;
-    struct album *tmpAlbum;
-    struct title *tmpTitle;
+    struct artist *tmpArtist, *tmpArtistFree;
+    struct album *tmpAlbum, *tmpAlbumFree;
+    struct title *tmpTitle, *tmpTitleFree;
     
     head = NULL;
     
@@ -242,17 +249,17 @@ int main() {
                 scanf(" %c", &menu);
                 if(menu == 'I' || menu == 'i') {
                     printf("Interpreten-Key angeben: ");
-                    scanf("%d", &interpretKey, interpretName);
+                    scanf("%d", &artistKey, artistName);
                     printf("Interpreten-Name angeben (maximal 50 Zeichen): ");
-                    scanf(" %50[^\n]s", interpretName);
-                    addInterpret(interpretKey, interpretName);
+                    scanf(" %50[^\n]s", artistName);
+                    addArtist(artistKey, artistName);
                 } else if(menu == 'A' || menu == 'a') {
                     printf("Album-Key angeben: ");
                     scanf("%d", &albumKey);
                     printf("Album-Name angeben (maximal 50 Zeichen): ");
                     scanf(" %50[^\n]s", albumName);
-                    printf("Interpret-Key angeben: ");
-                    scanf("%d", &interpretKey);
+                    printf("Interpreten-Key angeben: ");
+                    scanf("%d", &artistKey);
                     i = 0;
                     do {
                         printf("Titelnummer angeben (0 zum fertigstellen): ");
@@ -265,7 +272,7 @@ int main() {
                         scanf(" %50[^\n]s", titleNames[i]);
                         i++;
                     } while(i && i < 50);
-                    addAlbum(albumKey, albumName, interpretKey, titleKeys, titleNames, i);
+                    addAlbum(albumKey, albumName, artistKey, titleKeys, titleNames, i);
                 }
                 break;
             case 'A':
@@ -274,27 +281,27 @@ int main() {
                 scanf(" %c", &menu);
                 if(menu == 'I' || menu == 'i') {
                     printf("Interpreten-Key angeben: ");
-                    scanf("%d", &interpretKey);
-                    if((tmpInterpret = getInterpret(interpretKey))) {
-                        printf("Infos zum Interpret:\nKey:\t\t%d\nName:\t\t%s\nAlben:\n", tmpInterpret->key, tmpInterpret->name);
-                        if(!tmpInterpret->alben)
+                    scanf("%d", &artistKey);
+                    if((tmpArtist = getArtist(artistKey))) {
+                        printf("Infos zum Interpreten:\nKey:\t\t%d\nName:\t\t%s\nalbums:\n", tmpArtist->key, tmpArtist->name);
+                        if(!tmpArtist->albums)
                             printf("\t\tKeine.");
                         else {
-                            tmpAlbum = tmpInterpret->alben;
+                            tmpAlbum = tmpArtist->albums;
                             while(tmpAlbum != NULL) {
                                 printf("\t%d\t%s\n", tmpAlbum->key, tmpAlbum->name);
                                 tmpAlbum = tmpAlbum->next;
                             }
                         }
                     } else {
-                        printf("Kein Interpret mit dieser ID gefunden. Schon mal die Suche verwendet? Vielleicht hilft die weiter.\n");
+                        printf("Kein Artist mit dieser ID gefunden. Schon mal die Suche verwendet? Vielleicht hilft die weiter.\n");
                     }
                 } else if(menu == 'A' || menu == 'a') {
                     printf("Album-Key angeben: ");
                     scanf("%d", &albumKey);
                     if((tmpAlbum = getAlbum(albumKey))) {
-                        tmpInterpret = getInterpretByAlbumKey(albumKey);
-                        printf("Infos zum Album:\nKey:\t\t%d\nName:\t\t%s\nInterpret:\t%s\nTitel:\n", tmpAlbum->key, tmpAlbum->name, ((tmpInterpret->name) ? tmpInterpret->name : "Keiner (wat?)"));
+                        tmpArtist = getArtistByAlbumKey(albumKey);
+                        printf("Infos zum Album:\nKey:\t\t%d\nName:\t\t%s\nArtist:\t%s\nTitel:\n", tmpAlbum->key, tmpAlbum->name, ((tmpArtist->name) ? tmpArtist->name : "Keiner (wat?)"));
                         if(!tmpAlbum->titles)
                             printf("\t\tKeine.");
                         else {
@@ -315,16 +322,16 @@ int main() {
                 scanf(" %c", &menu);
                 if(menu == 'I' || menu == 'i') {
                     printf("Interpreten-Key angeben: ");
-                    scanf("%d", &interpretKey);
-                    switch(removeInterpret(interpretKey)) {
+                    scanf("%d", &artistKey);
+                    switch(removeArtist(artistKey)) {
                         case 0:
-                            printf("Interpret erfolgreich entfernt.");
+                            printf("Artist erfolgreich entfernt.");
                             break;
                         case 1:
-                            printf("Kein Interpret vorhanden.");
+                            printf("Kein Artist vorhanden.");
                             break;
                         case 2:
-                            printf("Interpret mit diesem Key nicht gefunden.");
+                            printf("Artist mit diesem Key nicht gefunden.");
                             break;
                     }
                 } else if(menu == 'A' || menu == 'a') {
@@ -349,13 +356,13 @@ int main() {
                 scanf(" %c", &menu);
                 if(menu == 'I' || menu == 'i') {
                     printf("Interpreten-Name angeben (maximal 50 Zeichen): ");
-                    scanf(" %50[^\n]s", interpretName);
-                    if((tmpInterpret = getInterpret(interpretKey))) {
-                        printf("Infos zum Interpret:\nKey:\t\t%d\nName:\t\t%s\nAlben:\n", tmpInterpret->key, tmpInterpret->name);
-                        if(!tmpInterpret->alben)
+                    scanf(" %50[^\n]s", artistName);
+                    if((tmpArtist = getArtist(artistKey))) {
+                        printf("Infos zum Interpret:\nKey:\t\t%d\nName:\t\t%s\nalbums:\n", tmpArtist->key, tmpArtist->name);
+                        if(!tmpArtist->albums)
                             printf("\t\tKeine.");
                         else {
-                            tmpAlbum = tmpInterpret->alben;
+                            tmpAlbum = tmpArtist->albums;
                             while(tmpAlbum != NULL) {
                                 printf("\t%d\t%s\n", tmpAlbum->key, tmpAlbum->name);
                                 tmpAlbum = tmpAlbum->next;
@@ -368,8 +375,8 @@ int main() {
                     printf("Album-Name angeben (maximal 50 Zeichen): ");
                     scanf(" %50[^\n]s", albumName);
                     if((tmpAlbum = getAlbum(albumKey))) {
-                        tmpInterpret = getInterpretByAlbumKey(albumKey);
-                        printf("Infos zum Album:\nKey:\t\t%d\nName:\t\t%s\nInterpret:\t%s\nTitel:\n", tmpAlbum->key, tmpAlbum->name, ((tmpInterpret->name) ? tmpInterpret->name : "Keiner (wat?)"));
+                        tmpArtist = getArtistByAlbumKey(albumKey);
+                        printf("Infos zum Album:\nKey:\t\t%d\nName:\t\t%s\nInterpret:\t%s\nTitel:\n", tmpAlbum->key, tmpAlbum->name, ((tmpArtist->name) ? tmpArtist->name : "Keiner (wat?)"));
                         if(!tmpAlbum->titles)
                             printf("\t\tKeine.");
                         else {
@@ -386,10 +393,28 @@ int main() {
                 break;
             case 'I':
             case 'i':
-                printf("Bevor ein Album hinzugefuegt werden kann, muss erst der Interpret angelegt werden. Das Album wird dem Interpreten dann mittels seines eindeutigen Key zugewiesen.\n");
+                printf("Bevor ein Album hinzugefuegt werden kann, muss erst der Artist angelegt werden. Das Album wird dem Artisten dann mittels seines eindeutigen Key zugewiesen.\n");
                 break;
             case '#':
                 //TODO: free memory
+                tmpArtist = head;
+                while(tmpArtist != NULL) {
+                    tmpAlbum = tmpArtist->albums;
+                    while(tmpAlbum != NULL) {
+                        tmpTitle = tmpAlbum->titles;
+                        while(tmpTitle != NULL) {
+                            tmpTitleFree = tmpTitle;
+                            tmpTitle = tmpTitle->next;
+                            free(tmpTitleFree);
+                        }
+                        tmpAlbumFree = tmpAlbum;
+                        tmpAlbum = tmpAlbum->next;
+                        free(tmpAlbumFree);
+                    }
+                    tmpArtistFree = tmpArtist;
+                    tmpArtist = tmpArtist->next;
+                    free(tmpArtistFree);
+                }
                 break;
         }
         putchar('\n');
