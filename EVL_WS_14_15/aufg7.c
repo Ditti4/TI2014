@@ -52,7 +52,7 @@ void addAlbum(int key, char *name, int artistKey, int *titleKeys, char (*titleNa
     
     tmpArtist = getArtist(artistKey);
     if(!tmpArtist) {
-        printf("Artist nicht gefunden. Hinzufuegen wurde abgebrochen.");
+        printf("Interpret nicht gefunden. Hinzufuegen wurde abgebrochen.\n");
         return;
     }
     
@@ -88,13 +88,16 @@ struct artist * getArtist(int key) {
 }
 
 struct album * getAlbum(int key) {
-    if(head == NULL)
+    if(head == NULL) {
         return NULL;
+    }
     struct artist *tmpArtist = head;
-    if(tmpArtist->albums == NULL)
-        return NULL;
-    struct album *tmpAlbum;
+    struct album *tmpAlbum = tmpArtist->albums;
     while(tmpArtist != NULL) {
+        if(tmpArtist->albums == NULL) {
+            tmpArtist = tmpArtist->next;
+            continue;
+        }
         tmpAlbum = tmpArtist->albums;
         while(tmpAlbum != NULL) {
             if(tmpAlbum->key == key)
@@ -114,10 +117,13 @@ struct artist * getArtistByAlbumKey(int key) {
     if(head == NULL)
         return NULL;
     struct artist *tmpArtist = head;
-    if(tmpArtist->albums == NULL)
-        return NULL;
-    struct album *tmpAlbum = tmpArtist->albums;
+    struct album *tmpAlbum = NULL;
     while(tmpArtist != NULL) {
+        if(tmpArtist->albums == NULL) {
+            tmpArtist = tmpArtist->next;
+            continue;
+        }
+        tmpAlbum = tmpArtist->albums;
         while(tmpAlbum != NULL) {
             if(tmpAlbum->key == key)
                 break;
@@ -139,13 +145,63 @@ int removeArtist(int key) {
     if(head == NULL)
         return 1;
     struct artist *tmpArtist = head, *tmpNext;
+    struct album *tmpAlbum, *tmpNextAlbum;
+    struct title *tmpTitle, *tmpNextTitle;
     if(tmpArtist->key == key) {
+        if((tmpArtist->albums)) {
+            tmpNextAlbum = tmpArtist->albums;
+            tmpArtist->albums = tmpArtist->albums->next;
+            free(tmpNextAlbum);
+            tmpAlbum = tmpArtist->albums;
+            while(tmpAlbum->next != NULL) {
+                if(tmpAlbum->titles) {
+                    tmpNextTitle = tmpAlbum->titles;
+                    tmpAlbum->titles = tmpAlbum->titles->next;
+                    free(tmpNextTitle);
+                    tmpTitle = tmpAlbum->titles;
+                    while(tmpTitle->next != NULL) {
+                        if(tmpTitle->next->key == key) {
+                            tmpNextTitle = tmpTitle->next;
+                            tmpTitle->next = tmpTitle->next->next;
+                            free(tmpNextTitle);
+                        }
+                    }
+                }
+                tmpNextAlbum = tmpAlbum->next;
+                tmpAlbum->next = tmpAlbum->next->next;
+                free(tmpNextAlbum);
+            }
+        }
         head = tmpArtist->next;
         free(tmpArtist);
         return 0;
     }
     while(tmpArtist->next != NULL) {
         if(tmpArtist->next->key == key) {
+            if((tmpArtist->albums)) {
+                tmpNextAlbum = tmpArtist->albums;
+                tmpArtist->albums = tmpArtist->albums->next;
+                free(tmpNextAlbum);
+                tmpAlbum = tmpArtist->albums;
+                while(tmpAlbum->next != NULL) {
+                    if(tmpAlbum->titles) {
+                        tmpNextTitle = tmpAlbum->titles;
+                        tmpAlbum->titles = tmpAlbum->titles->next;
+                        free(tmpNextTitle);
+                        tmpTitle = tmpAlbum->titles;
+                        while(tmpTitle->next != NULL) {
+                            if(tmpTitle->next->key == key) {
+                                tmpNextTitle = tmpTitle->next;
+                                tmpTitle->next = tmpTitle->next->next;
+                                free(tmpNextTitle);
+                            }
+                        }
+                    }
+                    tmpNextAlbum = tmpAlbum->next;
+                    tmpAlbum->next = tmpAlbum->next->next;
+                    free(tmpNextAlbum);
+                }
+            }
             tmpNext = tmpArtist->next;
             tmpArtist->next = tmpArtist->next->next;
             free(tmpNext);
@@ -161,8 +217,22 @@ int removeAlbum(int key) {
     if(tmpArtist == NULL)
         return 1;
     struct album *tmpAlbum, *tmpNext;
+    struct title *tmpTitle, *tmpNextTitle;
     if((tmpAlbum = tmpArtist->albums)) {
         if(tmpAlbum->key == key) {
+            if(tmpAlbum->titles) {
+                tmpNextTitle = tmpAlbum->titles;
+                tmpAlbum->titles = tmpAlbum->titles->next;
+                free(tmpNextTitle);
+                tmpTitle = tmpAlbum->titles;
+                while(tmpTitle->next != NULL) {
+                    if(tmpTitle->next->key == key) {
+                        tmpNextTitle = tmpTitle->next;
+                        tmpTitle->next = tmpTitle->next->next;
+                        free(tmpNextTitle);
+                    }
+                }
+            }
             tmpNext = tmpArtist->albums;
             tmpArtist->albums = tmpAlbum->next;
             free(tmpNext);
@@ -276,7 +346,7 @@ int main() {
                     printf("Interpreten-Key angeben: ");
                     scanf("%d", &artistKey);
                     if((tmpArtist = getArtist(artistKey))) {
-                        printf("Infos zum Interpreten:\nKey:\t\t%d\nName:\t\t%s\nalbums:\n", tmpArtist->key, tmpArtist->name);
+                        printf("Infos zum Interpreten:\nKey:\t\t%d\nName:\t\t%s\nAlben:\n", tmpArtist->key, tmpArtist->name);
                         if(!tmpArtist->albums)
                             printf("\t\tKeine.");
                         else {
@@ -287,16 +357,17 @@ int main() {
                             }
                         }
                     } else {
-                        printf("Kein Artist mit dieser ID gefunden. Schon mal die Suche verwendet? Vielleicht hilft die weiter.\n");
+                        printf("Kein Interpret mit dieser ID gefunden. Schon mal die Suche verwendet? Vielleicht hilft die weiter.\n");
                     }
                 } else if(menu == 'A' || menu == 'a') {
                     printf("Album-Key angeben: ");
                     scanf("%d", &albumKey);
                     if((tmpAlbum = getAlbum(albumKey))) {
                         tmpArtist = getArtistByAlbumKey(albumKey);
-                        printf("Infos zum Album:\nKey:\t\t%d\nName:\t\t%s\nArtist:\t%s\nTitel:\n", tmpAlbum->key, tmpAlbum->name, ((tmpArtist->name) ? tmpArtist->name : "Keiner (wat?)"));
-                        if(!tmpAlbum->titles)
+                        printf("Infos zum Album:\nKey:\t\t%d\nName:\t\t%s\nInterpret:\t%s\nTitel:\n", tmpAlbum->key, tmpAlbum->name, ((tmpArtist->name) ? tmpArtist->name : "Keiner (wat?)"));
+                        if(!tmpAlbum->titles) {
                             printf("\t\tKeine.");
+                        }
                         else {
                             tmpTitle = tmpAlbum->titles;
                             while(tmpTitle != NULL) {
@@ -351,7 +422,7 @@ int main() {
                     printf("Interpreten-Name angeben (maximal 50 Zeichen): ");
                     scanf(" %50[^\n]s", artistName);
                     if((tmpArtist = getArtist(artistKey))) {
-                        printf("Infos zum Interpret:\nKey:\t\t%d\nName:\t\t%s\nalbums:\n", tmpArtist->key, tmpArtist->name);
+                        printf("Infos zum Interpret:\nKey:\t\t%d\nName:\t\t%s\nAlben:\n", tmpArtist->key, tmpArtist->name);
                         if(!tmpArtist->albums)
                             printf("\t\tKeine.");
                         else {
@@ -389,7 +460,6 @@ int main() {
                 printf("Bevor ein Album hinzugefuegt werden kann, muss erst der Artist angelegt werden. Das Album wird dem Artisten dann mittels seines eindeutigen Key zugewiesen.\n");
                 break;
             case '#':
-                //TODO: free memory
                 tmpArtist = head;
                 while(tmpArtist != NULL) {
                     tmpAlbum = tmpArtist->albums;
