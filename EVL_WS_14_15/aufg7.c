@@ -144,70 +144,49 @@ struct artist * getArtistByAlbumKey(int key) {
 int removeArtist(int key) {
     if(head == NULL)
         return 1;
-    struct artist *tmpArtist = head, *tmpNext;
-    struct album *tmpAlbum, *tmpNextAlbum;
-    struct title *tmpTitle, *tmpNextTitle;
+    struct artist *tmpArtist, *tmpArtistFree;
+    struct album *tmpAlbum, *tmpAlbumFree;
+    struct title *tmpTitle, *tmpTitleFree;
+    tmpArtist = head;
     if(tmpArtist->key == key) {
-        if((tmpArtist->albums)) {
-            tmpNextAlbum = tmpArtist->albums;
-            tmpArtist->albums = tmpArtist->albums->next;
-            free(tmpNextAlbum);
-            tmpAlbum = tmpArtist->albums;
-            while(tmpAlbum->next != NULL) {
-                if(tmpAlbum->titles) {
-                    tmpNextTitle = tmpAlbum->titles;
-                    tmpAlbum->titles = tmpAlbum->titles->next;
-                    free(tmpNextTitle);
-                    tmpTitle = tmpAlbum->titles;
-                    while(tmpTitle->next != NULL) {
-                        if(tmpTitle->next->key == key) {
-                            tmpNextTitle = tmpTitle->next;
-                            tmpTitle->next = tmpTitle->next->next;
-                            free(tmpNextTitle);
-                        }
-                    }
-                }
-                tmpNextAlbum = tmpAlbum->next;
-                tmpAlbum->next = tmpAlbum->next->next;
-                free(tmpNextAlbum);
+        tmpAlbum = tmpArtist->albums;
+        while(tmpAlbum != NULL) {
+            tmpTitle = tmpAlbum->titles;
+            while(tmpTitle != NULL) {
+                tmpTitleFree = tmpTitle;
+                tmpTitle = tmpTitle->next;
+                free(tmpTitleFree);
             }
+            tmpAlbumFree = tmpAlbum;
+            tmpAlbum = tmpAlbum->next;
+            free(tmpAlbumFree);
         }
+        tmpArtistFree = tmpArtist;
         head = tmpArtist->next;
-        free(tmpArtist);
+        free(tmpArtistFree);
         return 0;
-    }
-    while(tmpArtist->next != NULL) {
-        if(tmpArtist->next->key == key) {
-            if((tmpArtist->albums)) {
-                tmpNextAlbum = tmpArtist->albums;
-                tmpArtist->albums = tmpArtist->albums->next;
-                free(tmpNextAlbum);
+    } else {
+        while(tmpArtist->next != NULL) {
+            if(tmpArtist->next->key == key) {
                 tmpAlbum = tmpArtist->albums;
-                while(tmpAlbum->next != NULL) {
-                    if(tmpAlbum->titles) {
-                        tmpNextTitle = tmpAlbum->titles;
-                        tmpAlbum->titles = tmpAlbum->titles->next;
-                        free(tmpNextTitle);
-                        tmpTitle = tmpAlbum->titles;
-                        while(tmpTitle->next != NULL) {
-                            if(tmpTitle->next->key == key) {
-                                tmpNextTitle = tmpTitle->next;
-                                tmpTitle->next = tmpTitle->next->next;
-                                free(tmpNextTitle);
-                            }
-                        }
+                while(tmpAlbum != NULL) {
+                    tmpTitle = tmpAlbum->titles;
+                    while(tmpTitle != NULL) {
+                        tmpTitleFree = tmpTitle;
+                        tmpTitle = tmpTitle->next;
+                        free(tmpTitleFree);
                     }
-                    tmpNextAlbum = tmpAlbum->next;
-                    tmpAlbum->next = tmpAlbum->next->next;
-                    free(tmpNextAlbum);
+                    tmpAlbumFree = tmpAlbum;
+                    tmpAlbum = tmpAlbum->next;
+                    free(tmpAlbumFree);
                 }
-            }
-            tmpNext = tmpArtist->next;
-            tmpArtist->next = tmpArtist->next->next;
-            free(tmpNext);
-            return 0;
-        } else
-            tmpArtist = tmpArtist->next;
+                tmpArtistFree = tmpArtist->next;
+                tmpArtist->next = tmpArtist->next->next;
+                free(tmpArtistFree);
+                return 0;
+            } else
+                tmpArtist = tmpArtist->next;
+        }
     }
     return 2;
 }
@@ -216,34 +195,35 @@ int removeAlbum(int key) {
     struct artist *tmpArtist = getArtistByAlbumKey(key);
     if(tmpArtist == NULL)
         return 1;
-    struct album *tmpAlbum, *tmpNext;
-    struct title *tmpTitle, *tmpNextTitle;
+    struct album *tmpAlbum, *tmpAlbumFree;
+    struct title *tmpTitle, *tmpTitleFree;
     if((tmpAlbum = tmpArtist->albums)) {
         if(tmpAlbum->key == key) {
-            if(tmpAlbum->titles) {
-                tmpNextTitle = tmpAlbum->titles;
-                tmpAlbum->titles = tmpAlbum->titles->next;
-                free(tmpNextTitle);
-                tmpTitle = tmpAlbum->titles;
-                while(tmpTitle->next != NULL) {
-                    if(tmpTitle->next->key == key) {
-                        tmpNextTitle = tmpTitle->next;
-                        tmpTitle->next = tmpTitle->next->next;
-                        free(tmpNextTitle);
-                    }
-                }
+            tmpTitle = tmpAlbum->titles;
+            while(tmpTitle != NULL) {
+                tmpTitleFree = tmpTitle;
+                tmpTitle = tmpTitle->next;
+                free(tmpTitleFree);
             }
-            tmpNext = tmpArtist->albums;
+            tmpAlbumFree = tmpAlbum;
             tmpArtist->albums = tmpAlbum->next;
-            free(tmpNext);
+            free(tmpAlbumFree);
             return 0;
-        }
-        while(tmpAlbum->next != NULL) {
-            if(tmpAlbum->next->key == key) {
-                tmpNext = tmpAlbum->next;
-                tmpAlbum->next = tmpAlbum->next->next;
-                free(tmpNext);
-                return 0;
+        } else {
+            while(tmpAlbum->next != NULL) {
+                if(tmpAlbum->next->key == key) {
+                    tmpTitle = tmpAlbum->titles;
+                    while(tmpTitle != NULL) {
+                        tmpTitleFree = tmpTitle;
+                        tmpTitle = tmpTitle->next;
+                        free(tmpTitleFree);
+                    }
+                    tmpAlbumFree = tmpAlbum->next;
+                    tmpAlbum->next = tmpAlbum->next->next;
+                    free(tmpAlbumFree);
+                    return 0;
+                } else
+                    tmpAlbum = tmpAlbum->next;
             }
         }
         return 42;
