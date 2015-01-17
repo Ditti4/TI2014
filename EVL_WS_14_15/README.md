@@ -1,0 +1,3 @@
+Hello there. In this directory you can find my attempts and maybe finished programs related to the exercises we got for our practical part of this semester.
+
+A explanation on what all the programs do will follow … soon …
