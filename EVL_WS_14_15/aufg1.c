@@ -3,23 +3,14 @@
 #include <stdlib.h>
 
 void replaceLetters(unsigned char *input, unsigned char *output);
-void rightShiftArray(unsigned char *input, int size, int pos);
 
 int main() {
-    unsigned char acRead[129];
+    unsigned char acRead[257];
     unsigned char acOut[257];
 
     gets(acRead);
     replaceLetters(acRead, acOut);
-
     printf("Verarbeiteter Text:\n%s\n", acOut);
-}
-
-void rightShiftArray(unsigned char *input, int size, int pos) {
-    int k;
-    for(k = size - 2; k >= pos; k--) {
-        input[k + 1] = input[k];
-    }
 }
 
 void replaceLetters(unsigned char *input, unsigned char *output) {
@@ -29,34 +20,35 @@ void replaceLetters(unsigned char *input, unsigned char *output) {
         if(output[i] >= 97 && output[i] <= 97 + 26) {
 	        output[i] -= 32;
 		} else {
-            switch(output[i]) {
-                case 132:
-                    output[i] = 142;
-                    break;
-                case 148:
-                    output[i] = 153;
-                    break;
-                case 129:
-                    output[i] = 154;
-                    break;
+            if(output[i] = 195) {
+                switch(output[i + 1]) {
+                    case 164:
+                        output[i + 1] = 132;
+                        break;
+                    case 182:
+                        output[i + 1] = 150;
+                        break;
+                    case 188:
+                        output[i + 1] = 156;
+                        break;
+                }
             }
         }
-		if(output[i] == 142 || output[i] == 153 || output[i] == 154 || output[i] == 225) {
-            rightShiftArray(output, 257, i);
-        	switch(output[i]) {
-				case 142:
+		if(output[i] == 195) {
+        	switch(output[i + 1]) {
+				case 132:
 		      		output[i] = 'A';
               		output[++i] = 'E';
               		break;
-				case 153:
+				case 150:
                 	output[i] = 'O';
                 	output[++i] = 'E';
                 	break;
-                case 154:
+                case 156:
                     output[i] = 'U';
                     output[++i] = 'E';
                     break;
-                case 225:
+                case 159:
                     output[i] = 'S';
                     output[++i] = 'Z';
                     break;
