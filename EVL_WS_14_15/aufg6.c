@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 double volumeBall(double r) {
-    return ((4/3)*3.14159265359*r*r*r);
+    return ((4.0/3.0)*3.14159265359*r*r*r);
 }
 
 double volumeCuboid(double a, double b, double c) {
@@ -9,7 +9,7 @@ double volumeCuboid(double a, double b, double c) {
 }
 
 double volumePyramid(double a, double b, double height) {
-    return ((1/3)*a*b*height);
+    return ((1.0/3.0)*a*b*height);
 }
 
 int main() {
