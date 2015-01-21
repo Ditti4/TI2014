@@ -292,18 +292,26 @@ int main() {
                 scanf(" %c", &menu);
                 if(menu == 'I' || menu == 'i') {
                     printf("Interpreten-Key angeben: ");
-                    scanf("%d", &artistKey);
+                    if(!scanf("%d", &artistKey)) {
+                        getchar();
+                        continue;
+                    }
                     printf("Interpreten-Name angeben (maximal 50 Zeichen): ");
                     scanf(" %50[^\n]s", artistName);
                     addArtist(artistKey, artistName);
                 } else if(menu == 'A' || menu == 'a') {
                     printf("Album-Key angeben: ");
-                    scanf("%d", &albumKey);
+                    if(!scanf("%d", &albumKey)) {
+                        getchar();
+                        continue;
+                    }
                     printf("Album-Name angeben (maximal 50 Zeichen): ");
                     scanf(" %50[^\n]s", albumName);
                     printf("Interpreten-Key angeben: ");
-                    scanf("%d", &artistKey);
-                    i = 0;
+                    if(!scanf("%d", &artistKey)) {
+                        getchar();
+                        continue;
+                    }                    i = 0;
                     do {
                         printf("Titelnummer angeben (0 zum fertigstellen): ");
                         scanf("%d", &titleKeys[i]);
@@ -324,7 +332,10 @@ int main() {
                 scanf(" %c", &menu);
                 if(menu == 'I' || menu == 'i') {
                     printf("Interpreten-Key angeben: ");
-                    scanf("%d", &artistKey);
+                    if(!scanf("%d", &artistKey)) {
+                        getchar();
+                        continue;
+                    }
                     if((tmpArtist = getArtist(artistKey))) {
                         printf("Infos zum Interpreten:\nKey:\t\t%d\nName:\t\t%s\nAlben:\n", tmpArtist->key, tmpArtist->name);
                         if(!tmpArtist->albums)
@@ -341,7 +352,10 @@ int main() {
                     }
                 } else if(menu == 'A' || menu == 'a') {
                     printf("Album-Key angeben: ");
-                    scanf("%d", &albumKey);
+                    if(!scanf("%d", &albumKey)) {
+                        getchar();
+                        continue;
+                    }
                     if((tmpAlbum = getAlbum(albumKey))) {
                         tmpArtist = getArtistByAlbumKey(albumKey);
                         printf("Infos zum Album:\nKey:\t\t%d\nName:\t\t%s\nInterpret:\t%s\nTitel:\n", tmpAlbum->key, tmpAlbum->name, ((tmpArtist->name) ? tmpArtist->name : "Keiner (wat?)"));
@@ -366,7 +380,10 @@ int main() {
                 scanf(" %c", &menu);
                 if(menu == 'I' || menu == 'i') {
                     printf("Interpreten-Key angeben: ");
-                    scanf("%d", &artistKey);
+                    if(!scanf("%d", &artistKey)) {
+                        getchar();
+                        continue;
+                    }
                     switch(removeArtist(artistKey)) {
                         case 0:
                             printf("Interpret erfolgreich entfernt.");
@@ -380,7 +397,10 @@ int main() {
                     }
                 } else if(menu == 'A' || menu == 'a') {
                     printf("Album-Key angeben: ");
-                    scanf("%d", &albumKey);
+                    if(!scanf("%d", &albumKey)) {
+                        getchar();
+                        continue;
+                    }
                     switch(removeAlbum(albumKey)) {
                         case 0:
                             printf("Album erfolgreich entfernt.");
