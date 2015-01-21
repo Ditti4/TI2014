@@ -16,14 +16,14 @@ void main() {
         a = realloc(a, x * sizeof(int));
         *(a + x - 1) = tmp;
     }
-    fflush(stdin);
+    getchar();
     printf("Zahlen fuer zweites Array eingeben (irgendwas anderes eingeben zum Beenden): ");
     while(1) {
         if(!scanf(" %d", &tmp))
             break;
         y++;
         b = realloc(b, y * sizeof(int));
-        *(b + y) = tmp;
+        *(b + y - 1) = tmp;
     }
     
     c = malloc((x + y) * sizeof(int));
@@ -31,10 +31,10 @@ void main() {
     for(i = 0; i < x; i++)
         *(c + i) = *(a + i);
     for(i = 0; i < y; i++)
-        *(c + i + 4) = *(b + i);
+        *(c + i + x) = *(b + i);
     do{
         exchange = 0;
-        for (i = 0; i < 7; i++) {
+        for (i = 0; i < (x + y - 1); i++) {
             if (*(c + i) > *(c + i + 1)) {
                 tmp = *(c + i);
                 *(c + i) = *(c + i + 1);
@@ -43,8 +43,11 @@ void main() {
             }
         }
     } while (exchange != 0);
-    printf("Here, take this!\n");
-    for (i = 0; i < 8; i++)
-        printf("%d ", c[i]);
+    for(i = 0; i < (x + y - 1); i++)
+        if(*(c + i) > *(c + i + 1))
+            printf("Falsch sortierte Zahlen an Stelle %d und %d (%d, %d)\n", i, i + 1, *(c + i), *(c + i + 1));
+    printf("Endergebnis nach Versuch der Sortierung:\n");
+    for(i = 0; i < (x + y); i++)
+        printf("%d ", *(c + i));
     putchar('\n');
 }
