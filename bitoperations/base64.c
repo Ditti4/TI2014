@@ -46,37 +46,31 @@ char *b64encode(struct stringwrapper *message) {
     char *encodedmessage = malloc(len * sizeof(char));
     for(i = 0; i < len / 3; i++) {
         first = ((preparedmessage[i * 3] >> 2));
-        first = (first < 0) ? 128 + first : first;
-        second = ((preparedmessage[i * 3] << 6) >> 2) | (preparedmessage[i * 3 + 1] >> 4);
-        second = (second < 0) ? 128 + second : second;
-        third = ((preparedmessage[i * 3 + 1] << 4) >> 2) | (preparedmessage[i * 3 + 2] >> 6);
-        third = (third < 0) ? 128 + third : third;
-        fourth = ((preparedmessage[i * 3 + 2] << 4) >> 2);
-        fourth = (fourth < 0) ? 128 + fourth : fourth;
-        printf("%d\n%d\n%d\n%d\n%d\n", first, second, third, fourth, len);
+        second = ((preparedmessage[i * 3] & 3) << 4) | (preparedmessage[i * 3 + 1] >> 4);
+        third = ((preparedmessage[i * 3 + 1] & 15) << 2) | (preparedmessage[i * 3 + 2] >> 6);
+        fourth = (preparedmessage[i * 3 + 2] & 63);
         encodedmessage[i * 4] = base64chars[first];
         encodedmessage[i * 4 + 1] = base64chars[second];
         encodedmessage[i * 4 + 2] = base64chars[third];
         encodedmessage[i * 4 + 3] = base64chars[fourth];
     }
-//     putchar(encodedmessage[0]);
-//     putchar('\n');
-//     putchar(encodedmessage[1]);
-//     putchar('\n');
     switch(message->addedbytes) {
         case 1:
-            encodedmessage[len] = '=';
+            encodedmessage[(len / 3 * 4) - 1] = '=';
             break;
         case 2:
-            encodedmessage[len - 1] = '=';
-            encodedmessage[len] = '=';
+            encodedmessage[(len / 3 * 4) - 1] = '=';
+            encodedmessage[(len / 3 * 4) - 2] = '=';
             break;
     }
     return encodedmessage;
 }
 
 int main(int argc, char **argv) {
-    printf(b64encode(b64prepare("test")));
-
+    char string[256];
+    print("Zeichenkette zum Encoden eingeben: ");
+    scanf("%s", string);
+    print(b64encode(b64prepare(string)));
+    putchar('\n');
     return 0;
 }
