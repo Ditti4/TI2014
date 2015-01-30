@@ -19,20 +19,22 @@ struct stringwrapper *b64prepare(char *message) {
     int len = strlen(message);
     char *preparedmessage;
     if(len % 3) {
-        preparedmessage = malloc((len + (3 - (len % 3))) * sizeof(char));
+        preparedmessage = malloc((len + 3 - (len % 3) + 1) * sizeof(char));
         
     } else {
         preparedmessage = malloc(len * sizeof(char));
     }
     strcpy(preparedmessage, message);
-    int i;
-    for(i = len; i < (len + (3 - (len % 3))); i++) {
-        preparedmessage[i] = 0;
+    if(len % 3) {
+        int i;
+        for(i = len; i < (len + 3 - (len % 3)); i++) {
+            preparedmessage[i] = 0;
+        }
     }
     struct stringwrapper *wrapper;
     wrapper = malloc(sizeof(struct stringwrapper));
     wrapper->string = preparedmessage;
-    wrapper->addedbytes = 3 - (len % 3);
+    wrapper->addedbytes = (len % 3) ? 3 - (len % 3) : 0;
     return wrapper;
 }
 
@@ -43,7 +45,7 @@ char *b64encode(struct stringwrapper *message) {
     char *preparedmessage = message->string;
     int i;
     char first, second, third, fourth;
-    char *encodedmessage = malloc(len * sizeof(char));
+    char *encodedmessage = malloc((len / 3) * 4 * sizeof(char));
     for(i = 0; i < len / 3; i++) {
         first = ((preparedmessage[i * 3] >> 2));
         second = ((preparedmessage[i * 3] & 3) << 4) | (preparedmessage[i * 3 + 1] >> 4);
@@ -57,10 +59,12 @@ char *b64encode(struct stringwrapper *message) {
     switch(message->addedbytes) {
         case 1:
             encodedmessage[(len / 3 * 4) - 1] = '=';
+            encodedmessage[(len / 3 * 4)] = '\0';
             break;
         case 2:
             encodedmessage[(len / 3 * 4) - 1] = '=';
             encodedmessage[(len / 3 * 4) - 2] = '=';
+            encodedmessage[(len / 3 * 4)] = '\0';
             break;
     }
     return encodedmessage;
