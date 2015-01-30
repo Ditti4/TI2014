@@ -1,19 +1,13 @@
 #ifndef RD_RESULT_H
 #define RD_RESULT_H
 
-#define PREPARE_RESULT()    result *resultpointer;\
-                            resultpointer = malloc(sizeof(result));\
-                            resultpointer->errid = 0;
-#define SET_ERRID(ID)       resultpointer->errid = ID;
-#define RETURN_RESULT(RES)  { resultpointer->result = RES;\
-                            return resultpointer; }
-#define RETURN_ERROR(ID)    { resultpointer->result = NULL;\
-                            resultpointer->errid = ID;\
-                            return resultpointer; }
-
+#define RETURN_RESULT(RES)  RETURN(RES, 0)
+#define RETURN_ERROR(ID)    RETURN(NULL, ID)
+#define RETURN(RES, ID)     return setResult(RES, setError(ID, initResult()))
+                            
 typedef struct functionresult {
     void *result;
-    int errid;
+    int errorid;
 } result;
 
 result *initResult();

@@ -2,12 +2,13 @@
 #include "result.h"
 
 result *initResult() {
-    PREPARE_RESULT();
+    result *resultpointer;
+    resultpointer = malloc(sizeof(result));
     return resultpointer;
 }
 
 result *setError(int errorid, result *resultpointer) {
-    resultpointer->errid = errorid;
+    resultpointer->errorid = errorid;
     return resultpointer;
 }
 
