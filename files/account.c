@@ -26,30 +26,25 @@ struct datawrapper {
     int elements;
 };
 
-struct account {
+struct transaction {
     int id;
     char name[129];
     int amount;
 };
 
-struct accountwrapper {
-    struct account *accounts;
+struct transactionwrapper {
+    struct transaction *transactions;
     int elements;
 };
 
-struct accountnamewrapper {
-    char **accountnames;
+struct transactionnamewrapper {
+    char **transactionnames;
     int elements;
 };
 
 struct charwrapper {
     char **string;
     int elements;
-};
-
-struct accountitem {
-    int id;
-    int amount;
 };
 
 void print(char *message) {
@@ -163,7 +158,7 @@ struct datawrapper *readDataFromFile(char *filename) {
     }
 }
 
-struct accountwrapper *rawToAccount(struct datawrapper *inputdata) {
+struct transactionwrapper *rawToTransaction(struct datawrapper *inputdata) {
     if(!inputdata) {
         errid = ERROR_ARG_NULL_POINTER;
         return NULL;
@@ -173,32 +168,32 @@ struct accountwrapper *rawToAccount(struct datawrapper *inputdata) {
         return NULL;
     }
     struct data *data = inputdata->data;
-    struct account *accounts;
-    if(!(accounts = malloc(inputdata->elements * 2 * sizeof(struct account)))) {
+    struct transaction *transactions;
+    if(!(transactions = malloc(inputdata->elements * 2 * sizeof(struct transaction)))) {
         errid = ERROR_MEM_MALLOC;
         return NULL;
     }
     int i = 0;
     for(i = 0; i < inputdata->elements; i++) {
-        accounts[i * 2].id = data[i].id;
-        accounts[i * 2 + 1].id = data[i].id;
-        accounts[i * 2].amount = -data[i].amount;
-        accounts[i * 2 + 1].amount = data[i].amount;
-        strcpy(accounts[i * 2].name, data[i].activename);
-        strcpy(accounts[i * 2 + 1].name, data[i].passivename);
+        transactions[i * 2].id = data[i].id;
+        transactions[i * 2 + 1].id = data[i].id;
+        transactions[i * 2].amount = -data[i].amount;
+        transactions[i * 2 + 1].amount = data[i].amount;
+        strcpy(transactions[i * 2].name, data[i].activename);
+        strcpy(transactions[i * 2 + 1].name, data[i].passivename);
     }
-    struct accountwrapper *wrapper;
-    if(!(wrapper = malloc(sizeof(struct accountwrapper)))) {
+    struct transactionwrapper *wrapper;
+    if(!(wrapper = malloc(sizeof(struct transactionwrapper)))) {
         errid = ERROR_MEM_MALLOC;
         return NULL;
     }
-    wrapper->accounts = accounts;
+    wrapper->transactions = transactions;
     wrapper->elements = i * 2;
     return wrapper;
 }
 
-struct accountwrapper *getAccountsByName(struct accountwrapper *inputdata, char *accountname) {
-    if(!inputdata || !accountname) {
+struct transactionwrapper *getTransactionsByName(struct transactionwrapper *inputdata, char *transactionname) {
+    if(!inputdata || !transactionname) {
         errid = ERROR_ARG_NULL_POINTER;
         return NULL;
     }
@@ -206,25 +201,25 @@ struct accountwrapper *getAccountsByName(struct accountwrapper *inputdata, char 
         errid = ERROR_ARG_EMPTY_WRAPPER;
         return NULL;
     }
-    struct account *inputaccounts = inputdata->accounts;
-    struct account *outputaccounts;
+    struct transaction *inputtransactions = inputdata->transactions;
+    struct transaction *outputtransactions;
     int i, j = 0;
     for(i = 0; i < inputdata->elements; i++) {
-        if(!strcmp(accountname, inputaccounts[i].name)) {
+        if(!strcmp(transactionname, inputtransactions[i].name)) {
             if(!j) {
-                if(!(outputaccounts = malloc(sizeof(struct account)))) {
+                if(!(outputtransactions = malloc(sizeof(struct transaction)))) {
                     errid = ERROR_MEM_MALLOC;
                     return NULL;
                 }
             } else {
-                if(!(outputaccounts = realloc(outputaccounts, (j + 1) * sizeof(struct account)))) {
+                if(!(outputtransactions = realloc(outputtransactions, (j + 1) * sizeof(struct transaction)))) {
                     errid = ERROR_MEM_MALLOC;
                     return NULL;
                 }
             }
-            outputaccounts[j].id = inputaccounts[i].id;
-            strcpy(outputaccounts[j].name, inputaccounts[i].name);
-            outputaccounts[j].amount = inputaccounts[i].amount;
+            outputtransactions[j].id = inputtransactions[i].id;
+            strcpy(outputtransactions[j].name, inputtransactions[i].name);
+            outputtransactions[j].amount = inputtransactions[i].amount;
             j++;
         }
     }
@@ -232,17 +227,17 @@ struct accountwrapper *getAccountsByName(struct accountwrapper *inputdata, char 
         errid = ERROR_UNKNOWN_ERROR;
         return NULL;
     }
-    struct accountwrapper *wrapper;
-    if(!(wrapper = malloc(sizeof(struct accountnamewrapper)))) {
+    struct transactionwrapper *wrapper;
+    if(!(wrapper = malloc(sizeof(struct transactionnamewrapper)))) {
         errid = ERROR_MEM_MALLOC;
         return NULL;
     }
-    wrapper->accounts = outputaccounts;
+    wrapper->transactions = outputtransactions;
     wrapper->elements = j;
     return wrapper;
 }
 
-struct accountnamewrapper *getAllAccountNamesFromAccountData(struct accountwrapper *inputdata) {
+struct transactionnamewrapper *getAllTransactionNamesFromTransactionData(struct transactionwrapper *inputdata) {
     if(!inputdata) {
         errid = ERROR_ARG_NULL_POINTER;
         return NULL;
@@ -251,51 +246,51 @@ struct accountnamewrapper *getAllAccountNamesFromAccountData(struct accountwrapp
         errid = ERROR_ARG_EMPTY_WRAPPER;
         return NULL;
     }
-    struct account *accounts = inputdata->accounts;
+    struct transaction *transactions = inputdata->transactions;
     int i, j = 0;
-    char **accountnames;
+    char **transactionnames;
     for(i = 0; i < inputdata->elements; i++) {
         if(!i) {
-            if(!(accountnames = malloc(sizeof(char*)))) {
+            if(!(transactionnames = malloc(sizeof(char*)))) {
                 errid = ERROR_MEM_MALLOC;
                 return NULL;
             }
-            if(!(accountnames[j] = malloc(129 * sizeof(char)))) {
+            if(!(transactionnames[j] = malloc(129 * sizeof(char)))) {
                 errid = ERROR_MEM_MALLOC;
                 return NULL;
             }
-            strcpy(accountnames[j], accounts->name);
+            strcpy(transactionnames[j], transactions->name);
             j++;
         } else {
-            if(!(accountnames = realloc(accountnames, (j + 1) * sizeof(char*)))) {
+            if(!(transactionnames = realloc(transactionnames, (j + 1) * sizeof(char*)))) {
                 errid = ERROR_MEM_REALLOC;
                 return NULL;
             }
-            if(!(accountnames[j] = malloc(129 * sizeof(char)))) {
+            if(!(transactionnames[j] = malloc(129 * sizeof(char)))) {
                 errid = ERROR_MEM_REALLOC;
                 return NULL;
             }
-            if(!isStringInArray(accounts[i].name, accountnames, j + 1)) {
-                strcpy(accountnames[j], accounts[i].name);
+            if(!isStringInArray(transactions[i].name, transactionnames, j + 1)) {
+                strcpy(transactionnames[j], transactions[i].name);
                 j++;
             }
         }
     }
-    if(!accountnames) {
+    if(!transactionnames) {
         errid = ERROR_UNKNOWN_ERROR;
         return NULL;
     }
-    struct accountnamewrapper *wrapper;
-    if(!(wrapper = malloc(sizeof(struct accountnamewrapper)))) {
+    struct transactionnamewrapper *wrapper;
+    if(!(wrapper = malloc(sizeof(struct transactionnamewrapper)))) {
         errid = ERROR_MEM_MALLOC;
         return NULL;
     }
-    wrapper->accountnames = accountnames;
+    wrapper->transactionnames = transactionnames;
     wrapper->elements = j;
     return wrapper;
 }
 
-struct charwrapper *accountToFormattedString(struct accountwrapper *inputdata) {
+struct charwrapper *accountToFormattedString(struct transactionwrapper *inputdata) {
     if(!inputdata) {
         errid = ERROR_ARG_NULL_POINTER;
         return NULL;
@@ -321,65 +316,65 @@ int main() {
     struct datawrapper *datawrapper;
     if(datawrapper = readDataFromFile("data")) {
         struct data *data = datawrapper->data;
-        struct accountwrapper *accountwrapper;
-        if(accountwrapper = rawToAccount(datawrapper)) {
-            struct accountnamewrapper *accountnamewrapper;
-            if(accountnamewrapper = getAllAccountNamesFromAccountData(accountwrapper)) {
+        struct transactionwrapper *transactionwrapper;
+        if(transactionwrapper = rawToTransaction(datawrapper)) {
+            struct transactionnamewrapper *transactionnamewrapper;
+            if(transactionnamewrapper = getAllTransactionNamesFromTransactionData(transactionwrapper)) {
                 int i;
-                struct accountwrapper *currentaccountwrapper;
-                struct account *currentaccounts;
-                for(i = 0; i < accountnamewrapper->elements; i++) {
-                    if(currentaccountwrapper = getAccountsByName(accountwrapper, accountnamewrapper->accountnames[i])) {
-                        currentaccounts = currentaccountwrapper->accounts;
-                        printf("%s\n", accountnamewrapper->accountnames[i]);
+                struct transactionwrapper *currenttransactionwrapper;
+                struct transaction *currenttransactions;
+                for(i = 0; i < transactionnamewrapper->elements; i++) {
+                    if(currenttransactionwrapper = getTransactionsByName(transactionwrapper, transactionnamewrapper->transactionnames[i])) {
+                        currenttransactions = currenttransactionwrapper->transactions;
+                        printf("%s\n", transactionnamewrapper->transactionnames[i]);
                         print("Soll      |      Haben\n");
                         print("----------+-----------\n");
                         int j;
-                        struct accountitem *has, *should;
-                        int hascount = 0, shouldcount = 0;
-                        for(j = 0; j < currentaccountwrapper->elements; j++) {
-                            if(currentaccounts[j].amount < 0) {
-                                if(shouldcount == 0) {
-                                    should = malloc(sizeof(struct accountitem));
+                        struct transactionitem *credits, *targets;
+                        int creditcount = 0, targetscount = 0;
+                        for(j = 0; j < currenttransactionwrapper->elements; j++) {
+                            if(currenttransactions[j].amount < 0) {
+                                if(targetscount == 0) {
+                                    targets = malloc(sizeof(struct transactionitem));
                                 } else {
-                                    should = realloc(should, (shouldcount + 1) * sizeof(struct accountitem));
+                                    targets = realloc(targets, (targetscount + 1) * sizeof(struct transactionitem));
                                 }
-                                should[shouldcount].amount = -currentaccounts[j].amount;
-                                should[shouldcount].id = currentaccounts[j].id;
-                                shouldcount++;
+                                targets[targetscount].amount = -currenttransactions[j].amount;
+                                targets[targetscount].id = currenttransactions[j].id;
+                                targetscount++;
                             } else {
-                                if(hascount == 0) {
-                                    has = malloc(sizeof(struct accountitem));
+                                if(creditcount == 0) {
+                                    credits = malloc(sizeof(struct transactionitem));
                                 } else {
-                                    has = realloc(has, (hascount + 1) * sizeof(struct accountitem));
+                                    credits = realloc(credits, (creditcount + 1) * sizeof(struct transactionitem));
                                 }
-                                has[hascount].amount = currentaccounts[j].amount;
-                                has[hascount].id = currentaccounts[j].id;
-                                hascount++;
+                                credits[creditcount].amount = currenttransactions[j].amount;
+                                credits[creditcount].id = currenttransactions[j].id;
+                                creditcount++;
                             }
                         }
-                        for(j = 0; j < ((hascount > shouldcount ) ? hascount : shouldcount); j++) {
-                            if(j < shouldcount) {
-                                printf("%d)%d", should[j].id, should[j].amount);
+                        for(j = 0; j < ((creditcount > targetscount ) ? creditcount : targetscount); j++) {
+                            if(j < targetscount) {
+                                printf("%d)%d", targets[j].id, targets[j].targets);
                             }
                             print("\t  |   ");
-                            if(j < hascount) {
-                                printf("%d)%d", has[j].id, has[j].amount);
+                            if(j < creditcount) {
+                                printf("%d)%d", credits[j].id, credits[j].amount);
                             }
                             putchar('\n');
                         }
                         putchar('\n');
                     } else {
-                        print("getAccountsByName()\n");
+                        print("getTransactionsByName()\n");
                         except();
                     }
                 }
             } else {
-                print("getAllAccountNamesFromAccountData()\n");
+                print("getAllTransactionNamesFromTransactionData()\n");
                 except();
             }
         } else {
-            print("rawToAccount()\n");
+            print("rawToTransaction()\n");
             except();
         }
         
