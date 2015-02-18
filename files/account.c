@@ -295,32 +295,9 @@ struct transactionnamewrapper *getAllTransactionNamesFromTransactionData(struct 
     return wrapper;
 }
 
-struct charwrapper *accountToFormattedString(struct transactionwrapper *inputdata) {
-    if(!inputdata) {
-        errid = ERROR_ARG_NULL_POINTER;
-        return NULL;
-    }
-    if(!inputdata->elements) {
-        errid = ERROR_ARG_EMPTY_WRAPPER;
-        return NULL;
-    }
-    int i;
-    char **formattedstring;
-    for(i = 0; i < inputdata->elements; i++) {
-        
-    }
-    struct charwrapper *wrapper;
-    if(!(wrapper = malloc(sizeof(struct charwrapper)))) {
-        errid = ERROR_MEM_MALLOC;
-        return NULL;
-    };
-    return wrapper;
-};
-
 int main() {
     struct datawrapper *datawrapper;
     if(datawrapper = readDataFromFile("data")) {
-        struct data *data = datawrapper->data;
         struct transactionwrapper *transactionwrapper;
         if(transactionwrapper = rawToTransaction(datawrapper)) {
             struct transactionnamewrapper *transactionnamewrapper;
