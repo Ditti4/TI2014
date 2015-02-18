@@ -42,6 +42,11 @@ struct transactionnamewrapper {
     int elements;
 };
 
+struct transactionitem {
+    int id;
+    int amount;
+};
+
 struct charwrapper {
     char **string;
     int elements;
@@ -355,7 +360,7 @@ int main() {
                         }
                         for(j = 0; j < ((creditcount > targetscount ) ? creditcount : targetscount); j++) {
                             if(j < targetscount) {
-                                printf("%d)%d", targets[j].id, targets[j].targets);
+                                printf("%d)%d", targets[j].id, targets[j].amount);
                             }
                             print("\t  |   ");
                             if(j < creditcount) {
