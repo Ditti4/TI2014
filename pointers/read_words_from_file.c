@@ -57,7 +57,7 @@ int findPositionForName(char *pword, char **ppwords, int start, int size) {
         return first_try;
     } else {
         second_try = findPositionForName(pword, ppwords, half, size);
-            return second_try;
+        return second_try;
     }
 }
 
