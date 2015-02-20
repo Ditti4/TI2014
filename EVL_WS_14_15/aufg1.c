@@ -18,9 +18,9 @@ void replaceLetters(unsigned char *input, unsigned char *output) {
     int i;
     for(i = 0; i < 257 && output[i] != '\0'; i++) {
         if(output[i] >= 97 && output[i] <= 97 + 26) {
-	        output[i] -= 32;
-		} else {
-            if(output[i] = 195) {
+            output[i] -= 32;
+        } else {
+            if(output[i] == 195) {
                 switch(output[i + 1]) {
                     case 164:
                         output[i + 1] = 132;
@@ -34,16 +34,16 @@ void replaceLetters(unsigned char *input, unsigned char *output) {
                 }
             }
         }
-		if(output[i] == 195) {
-        	switch(output[i + 1]) {
-				case 132:
-		      		output[i] = 'A';
-              		output[++i] = 'E';
-              		break;
-				case 150:
-                	output[i] = 'O';
-                	output[++i] = 'E';
-                	break;
+        if(output[i] == 195) {
+            switch(output[i + 1]) {
+                case 132:
+                    output[i] = 'A';
+                    output[++i] = 'E';
+                    break;
+                case 150:
+                    output[i] = 'O';
+                    output[++i] = 'E';
+                    break;
                 case 156:
                     output[i] = 'U';
                     output[++i] = 'E';
