@@ -49,29 +49,16 @@ int findPositionForName(char *pword, char **ppwords, int start, int size) {
     if(half - 1 > 0 && strcmp(pword, ppwords[half - 1]) == 0) {
         return ERROR_EXISTS;
     }
-    if(half + 1 < size && strcmp(pword, ppwords[half + 1]) == 0) {
+    if(half < size && strcmp(pword, ppwords[half]) == 0) {
         return ERROR_EXISTS;
     }
     if(strcmp(pword, ppwords[half - 1]) < 0) {
         first_try = findPositionForName(pword, ppwords, start, half);
-        if(first_try != -1) {
-            return first_try;
-        }
+        return first_try;
     } else {
         second_try = findPositionForName(pword, ppwords, half, size);
-        if(second_try != -1) {
             return second_try;
-        }
     }
-    return -1;
-//     int i;
-//     for(i = start; i < size; i++) {
-//         if(strcmp(pword, ppwords[i]) < 0) {
-//             return i;
-//         } else if (strcmp(pword, ppwords[i]) == 0) {
-//             return ERROR_EXISTS;
-//         }
-//     }
 }
 
 int rightShiftArray(char ***ppwords, int freepos, int size) {
@@ -81,13 +68,7 @@ int rightShiftArray(char ***ppwords, int freepos, int size) {
     int i, j;
     for(i = size; i > freepos; i--) {
         (*ppwords)[i] = (*ppwords)[i - 1];
-//         printf("i: %d\n", i);
-//         for(j = 0; j <= size; j++) {
-//             printf("-> ppwords[%d] = %s\n", j, (*ppwords)[j]);
-//         }
-//         putchar('\n');
     }
-//     printf("loop end\n");
     return 0;
 }
 
@@ -108,8 +89,6 @@ struct wordarray_t *fileToArray(FILE *fp, char **ppwords, int ppwordssize) {
                 pword = realloc(pword, (pwordsize + 1) * sizeof(char));
                 pword[pwordsize] = '\0';
                 pos = findPositionForName(pword, ppwords, 0, ppwordssize);
-//                 printf("just the pos: %d\n", pos);
-//                 printf("word '%s' at pos %d\n", pword, pos);
                 if(pos == ERROR_EXISTS || pos == ERROR_NO_POS_FOUND) {
                     pwordsize = 0;
                     free(pword);
@@ -118,23 +97,15 @@ struct wordarray_t *fileToArray(FILE *fp, char **ppwords, int ppwordssize) {
                 }
                 rightShiftArray(&ppwords, pos, ppwordssize);
                 ppwords[pos] = malloc((pwordsize + 1) * sizeof(char));
-//                 ppwords = realloc(ppwords, ++ppwordssize * sizeof(char*));
-//                 ppwords[ppwordssize - 1] = malloc((pwordsize + 1) * sizeof(char));
                 strcpy(ppwords[pos], pword);
-//                 strcpy(ppwords[ppwordssize - 1], pword);
-//                 ppwords[ppwordssize - 1][pwordsize] = '\0';
-//                 putchar('\n');
                 ppwordssize++;
-//                 printf("pwordsize: %d\n", pwordsize);
                 pwordsize = 0;
                 free(pword);
                 pword = NULL;
-//                 printf("after free()\n");
             }
         } else {
             pword = realloc(pword, ++pwordsize * sizeof(char));
             pword[pwordsize - 1] = currentchar;
-//             putchar(currentchar);
         }
     }
     
@@ -169,9 +140,9 @@ int main(int argc, char **argv) {
         size = result->size;
     }
     
-    for(i = 0; i < result->size; i++) {
-        printf("ppwords[%d] = %s\n", i, result->ppwords[i]);
-    }
+//     for(i = 0; i < result->size; i++) {
+//         printf("ppwords[%d] = %s\n", i, result->ppwords[i]);
+//     }
     
     return 0;
 }
