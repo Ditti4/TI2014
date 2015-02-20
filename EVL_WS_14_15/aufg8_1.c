@@ -24,9 +24,8 @@ int main() {
                 fflush(stdin);
                 fprintf(outputFile, "%d\n", wert);
             }
+            fclose(outputFile);
             break;
     }
-    
-    fclose(outputFile);
     return 0;
 }
