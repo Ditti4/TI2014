@@ -1,36 +1,28 @@
 #include <stdio.h>
 
 void analyze(unsigned char *string) {
-    int max = 0, min = 255, space = -1, i, counter = 0;
+    int max = 0, min = 255, currentword = 0, wordcount = 0, i;
 
-    for(i = 0; i < 256 && string[i - 1] != '\0'; i++) {
-        if(string[i] == ' ') {
-            if(i - 1 >= 0 && string[i - 1] != ' ' ) {
-                counter++;
-                if(i - space - 1 < min) {
-                    min = i - space - 1;
+    for(i = 0; i < 256; i++) {
+        if(string[i] == ' ' || string[i] == '\0') {
+            if(currentword) {
+                wordcount++;
+                if(currentword < min) {
+                    min = currentword;
                 }
-                if(i - space - 1 > max) {
-                    max = i - space - 1;
+                if(currentword > max) {
+                    max = currentword;
                 }
+                currentword = 0;
             }
-            space = i;
-        } else if(i + 1 >= 256 || string[i] == '\0'){
-            if(string[i - 1] != ' ') {
-                counter++;
-                if(i - space - 1 < min) {
-                    min = i - space - 1;
-                }
-                if(i - space - 1 > max) {
-                    max = i - space - 1;
-                }
-            }
+        } else {
+            currentword++;
         }
-        if(i + 1 < 256 && string[i + 1] == ' ' && string[i] == ' ') {
-            space = ++i;
+        if(string[i] == '\0') {
+            break;
         }
     }
-    printf("Anzahl der Woerter: %d\nLaengstes Wort: %d\nKuerzestes Wort: %d\n", counter, max, min);
+    printf("Anzahl der Woerter: %d\nLaengstes Wort: %d\nKuerzestes Wort: %d\n", wordcount, max, min);
 }
 
 void main() {
