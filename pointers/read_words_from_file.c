@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SPACELIKE(A)    A <= 44 || \
+#define SPACELIKE(A)    (A <= 44 && A >= 0) || \
                         A == 46 || \
                         A == 47 || \
                         (A >= 58 && A <= 64) || \
@@ -61,15 +61,15 @@ int findPositionForName(char *pword, char **ppwords, int start, int size) {
     }
 }
 
-int rightShiftArray(char ***ppwords, int freepos, int size) {
+int rightShiftCharArray(char ***ppwords, int freepos, int size) {
     if(!(*ppwords = realloc(*ppwords, (size + 1) * sizeof(char*)))) {
         return ERROR_REALLOC;
     }
-    int i, j;
+    int i;
     for(i = size; i > freepos; i--) {
         (*ppwords)[i] = (*ppwords)[i - 1];
     }
-    return 0;
+    return ERROR_NONE;
 }
 
 struct wordarray_t *fileToArray(FILE *fp, char **ppwords, int ppwordssize) {
@@ -90,12 +90,18 @@ struct wordarray_t *fileToArray(FILE *fp, char **ppwords, int ppwordssize) {
                 pword[pwordsize] = '\0';
                 pos = findPositionForName(pword, ppwords, 0, ppwordssize);
                 if(pos == ERROR_EXISTS || pos == ERROR_NO_POS_FOUND) {
+//                     printf("Error encountered for word %s (pos %d)\n", pword, pos);
                     pwordsize = 0;
                     free(pword);
                     pword = NULL;
                     continue;
                 }
-                rightShiftArray(&ppwords, pos, ppwordssize);
+                if(rightShiftCharArray(&ppwords, pos, ppwordssize) != ERROR_NONE) {
+                    pwordsize = 0;
+                    free(pword);
+                    pword = NULL;
+                    break;
+                }
                 ppwords[pos] = malloc((pwordsize + 1) * sizeof(char));
                 strcpy(ppwords[pos], pword);
                 ppwordssize++;
@@ -127,17 +133,18 @@ int main(int argc, char **argv) {
     struct wordarray_t *result;
     for(i = 1; i < argc; i++) {
         if(!(fp = fopen(argv[i], "r"))) {
-            printf("Couldn't open file %s\n", argv[1]);
+            printf("Couldn't open file \"%s\". Does it exist and do you have read permission?\n", argv[i]);
             continue;
         }
         result = fileToArray(fp, ppwords, size);
         fclose(fp);
         if(!result->ppwords) {
-            printf("Error processing file %s\n", argv[1]);
+            printf("Error processing file \"%s\". Is it empty?\n", argv[i]);
             continue;
         }
         ppwords = result->ppwords;
         size = result->size;
+        printf("Successfully processed file \"%s\" (%d elements).\n", argv[i], size);
     }
     
 //     for(i = 0; i < result->size; i++) {
