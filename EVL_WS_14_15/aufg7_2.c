@@ -341,6 +341,20 @@ int main(int argc, char **argv) {
                 }
                 menu = 'e';
                 break;
+            default:
+                artist = HEAD;
+                while(artist) {
+                    album = artist->albumtree;
+                    while(album) {
+                        artist->albumtree = album->next;
+                        free(album);
+                        album = artist->albumtree;
+                    }
+                    HEAD = artist->next;
+                    free(artist);
+                    artist = HEAD;
+                }
+                break;
         }
     } while(menu == 'H' || menu == 'h' || menu == 'A' || menu == 'a' || menu == 'E' || menu == 'e' || menu == 'G' || menu == 'g');
     
