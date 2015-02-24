@@ -41,15 +41,15 @@ int findPositionForName(char *pword, char **ppwords, int start, int size) {
     if(strcmp(pword, ppwords[size - 1]) == 0) {
         return ERROR_EXISTS;
     }
-    if((size - start) <= 1) {
+    int half = ((start + size + ((start + size) % 2)) / 2);
+    if((size - start) <= 1 || half <= 1) {
         return ERROR_NO_POS_FOUND;
     }
     int first_try, second_try;
-    int half = ((start + size + ((start + size) % 2)) / 2);
-    if(half - 1 > 0 && strcmp(pword, ppwords[half - 1]) == 0) {
+    if(strcmp(pword, ppwords[half - 1]) == 0) {
         return ERROR_EXISTS;
     }
-    if(half < size && strcmp(pword, ppwords[half]) == 0) {
+    if(strcmp(pword, ppwords[half]) == 0) {
         return ERROR_EXISTS;
     }
     if(strcmp(pword, ppwords[half - 1]) < 0) {
