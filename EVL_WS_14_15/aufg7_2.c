@@ -230,7 +230,7 @@ int main(int argc, char **argv) {
                     case 'I':
                     case 'i':
                         printf("Name des Interpreten angeben: ");
-                        scanf(" %99[^\n]s %99s", artist_name);
+                        scanf(" %99[^\n]s", artist_name);
                         resultpointer = add_artist(artist_name);
                         if(resultpointer->errid) {
                             printf("Fehler beim Hinzufuegen des Interpreten. (Fehlercode %d)\n", resultpointer->errid);
