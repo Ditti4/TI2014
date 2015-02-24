@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
                     case 'I':
                     case 'i':
                         printf("Name des Interpreten angeben: ");
-                        scanf(" %s99", artist_name);
+                        scanf(" %99[^\n]s", artist_name);
                         resultpointer = find_artist(artist_name);
                         if(resultpointer->errid) {
                             printf("Fehler beim Suchen des Interpreten. (Fehlercode %d)\n", resultpointer->errid);
@@ -281,7 +281,7 @@ int main(int argc, char **argv) {
                     case 'A':
                     case 'a':
                         printf("Name des Albums angeben: ");
-                        scanf(" %s99", album_name);
+                        scanf(" %99[^\n]s", album_name);
                         resultpointer = find_album(album_name);
                         if(resultpointer->errid) {
                             printf("Fehler beim Suchen des Albums. (Fehlercode %d)\n", resultpointer->errid);
@@ -319,7 +319,7 @@ int main(int argc, char **argv) {
                     case 'I':
                     case 'i':
                         printf("Name des Interpreten angeben: ");
-                        scanf(" %s99", artist_name);
+                        scanf(" %99[^\n]s", artist_name);
                         errid = remove_artist(artist_name);
                         if(errid) {
                             printf("Fehler beim Entfernen des Interpreten. (Fehlercode %d)\n", errid);
@@ -330,7 +330,7 @@ int main(int argc, char **argv) {
                     case 'A':
                     case 'a':
                         printf("Name des Albums angeben: ");
-                        scanf(" %s99", album_name);
+                        scanf(" %99[^\n]s", album_name);
                         errid = remove_album(album_name);
                         if(errid) {
                             printf("Fehler beim Entfernen des Albums. (Fehlercode %d)\n", errid);
