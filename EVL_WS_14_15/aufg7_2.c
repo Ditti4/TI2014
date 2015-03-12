@@ -162,9 +162,11 @@ int remove_album(char *name) {
         return ERROR_EMPTY_HEAD;
     }
     artist_t *current_artist = HEAD;
-    album_t *current_album = current_artist->albumtree;
-    album_t *next_album = current_album->next;
+    album_t *current_album;
+    album_t *next_album;
     while(current_artist) {
+        current_album = current_artist->albumtree;
+        next_album = current_album->next;
         if(strcmp(current_artist->albumtree->name, name) == 0) {
             current_artist->albumtree = current_album->next;
             free(current_album);
@@ -180,7 +182,6 @@ int remove_album(char *name) {
             next_album = next_album->next;
         }
         current_artist = current_artist->next;
-        current_album = current_artist->albumtree;
     }
     return ERROR_ALBUM_NOT_FOUND;
 }
