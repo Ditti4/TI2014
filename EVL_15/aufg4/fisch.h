@@ -6,7 +6,7 @@
 class CFisch: public CTier {
 public:
     CFisch(string name);
-    virtual void KannEtwas();
+    void KannEtwas();
 };
 
 #endif

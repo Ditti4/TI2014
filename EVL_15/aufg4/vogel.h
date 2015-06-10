@@ -6,7 +6,7 @@
 class CVogel: public CTier {
 public:
     CVogel(string name);
-    virtual void KannEtwas();
+    void KannEtwas();
 };
 
 #endif
