@@ -15,7 +15,7 @@ public:
             matrix[i] = new int[size];
         }
     }
-    
+
     ~CMagQuadrat() {
         int i;
         for(i = 0; i < size; i++) {
@@ -25,7 +25,7 @@ public:
         delete [] matrix;
         matrix = NULL;
     }
-    
+
     void generate_magic_square() {
         int startingpoint_x = ((size - 1) / 2);
         int startingpoint_y = ((size - 3) / 2);
@@ -40,7 +40,7 @@ public:
             y = (--y == -1) ? (size - 1) : y;
         }
     }
-    
+
     void show_magic_square() {
         int x, y;
         cout << endl;
@@ -52,7 +52,7 @@ public:
         }
         cout << endl;
     }
-    
+
     int get_sum() {
         int i, j, lastsum, sum;
         for(j = lastsum = sum = 0; j < size; j++) {

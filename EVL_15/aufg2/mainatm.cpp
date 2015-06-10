@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     int pin;
     float amount;
     int menu;
-    
+
     while(1) {
         cout << "Willkommen am ATM. Bitte Kontonummer und PIN eingeben." << endl;
         cout << "Kontonummer: ";
@@ -40,6 +40,6 @@ int main(int argc, char **argv) {
             cout << "Fehler beim Login." << endl;
         }
     }
-    
+
     return 0;
 }
