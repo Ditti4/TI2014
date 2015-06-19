@@ -8,7 +8,7 @@ typedef struct {
 } square_t;
 
 int is_pos_on_square_edge(int posx, int posy, square_t square) {
-	if(posx < square.posx || posx > (square.posx + square.sizex)) {
+	if(posx < square.posx || posx > (square.posx + square.sizex) || posy < square.posy || posy > (square.posy + square.sizey)) {
 		return 0;
 	} else if((posx == square.posx || posx == (square.posx + square.sizex)) && (posy >= square.posy && posy <= (square.posy + square.sizey))) {
 		return 1;
