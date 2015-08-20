@@ -14,6 +14,7 @@ public:
         for(i = 0; i < size; i++) {
             matrix[i] = new int[size];
         }
+        generate_magic_square();
     }
 
     ~CMagQuadrat() {
@@ -88,7 +89,6 @@ int main(int argc, char **argv) {
         return 1;
     }
     CMagQuadrat square(size);
-    square.generate_magic_square();
     square.show_magic_square();
     int sum = square.get_sum();
     if(sum == 0) {
