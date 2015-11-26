@@ -1,4 +1,6 @@
-# TI2014 Hello there. If you found this you either searched for the smallest
+# TI2014
+
+Hello there. If you found this you either searched for the smallest
 repository in the world or you are a member of my study group. In that case I
 could switch to German, but meh.
 
